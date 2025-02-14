@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Head sõbrapäeva!</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .message {
+            position: relative;
+            z-index: 2;
+            font-size: 3rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="message">Head sõbrapäeva!</div>
+    <canvas id="heartCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const hearts = [];
+        const gravity = 0.5;
+        const heartSize = 30;
+
+        class Heart {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.velocityY = 0;
+            }
+
+            draw() {
+                ctx.font = `${heartSize}px Arial`;
+                ctx.fillText('❤️', this.x, this.y);
+            }
+
+            update() {
+                this.velocityY += gravity;
+                this.y += this.velocityY;
+
+                if (this.y + heartSize > canvas.height) {
+                    this.y = canvas.height - heartSize;
+                    this.velocityY *= -0.5; // Bounce effect
+                }
+
+                this.draw();
+            }
+        }
+
+        function createHeart() {
+            const x = Math.random() * canvas.width;
+            const y = -heartSize;
+            hearts.push(new Heart(x, y));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach((heart, index) => {
+                heart.update();
+                if (heart.y >= canvas.height && Math.abs(heart.velocityY) < 1) {
+                    hearts.splice(index, 1); // Remove hearts when they stop bouncing
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        setInterval(createHeart, 500); // Create a new heart every 500ms
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
